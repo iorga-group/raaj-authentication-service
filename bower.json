@@ -1,0 +1,20 @@
+{
+  "name": "raaj-authentication-service",
+  "version": "1.2.0",
+  "homepage": "https://github.com/iorga-group/raaj-authentication-service",
+  "authors": [
+    "iORGA GROUP"
+  ],
+  "description": "Restless Architecture for AngularJS - Authentication Service",
+  "main": "./src/raaj-authentication-service.js",
+  "dependencies": {
+    "angular": "~1.2.15",
+    "raaj-security-utils": "~1.2.0"
+  },
+  "keywords": [
+    "raaj",
+    "authentication",
+    "restless"
+  ],
+  "license": "LGPLv3"
+}
