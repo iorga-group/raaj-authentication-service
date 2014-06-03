@@ -19,7 +19,7 @@
     // based on https://github.com/witoldsz/angular-http-auth/blob/master/src/http-auth-interceptor.js
 
     angular.module('raaj-authentication-service', [])
-        .provider('irajAuthenticationService', function() {
+        .provider('raajAuthenticationService', function() {
             var getTimeApiUrl = 'api/security/getTime';
             this.setGetTimeApiUrl = function (getTimeApiUrlParam) {
                 getTimeApiUrl = getTimeApiUrlParam;
@@ -69,7 +69,7 @@
                 };
                 this.addAuthorizationHeader = function(config) {
                     // Adding the date header considering the time shifting
-                    config.headers['X-IRAJ-Date'] = new Date(new Date().getTime() - authenticationService.timeShifting).toUTCString();
+                    config.headers['X-RAAJ-Date'] = new Date(new Date().getTime() - authenticationService.timeShifting).toUTCString();
 
                     securityUtils.addAuthorizationHeader(authenticationService.login, authenticationService.digestedPassword, {
                         method: config.method,
@@ -84,9 +84,9 @@
                 return new AuthenticationService($injector, $rootScope);
             };
         })
-        .run(function($rootScope, irajAuthenticationService) {
+        .run(function($rootScope, raajAuthenticationService) {
             $rootScope.$on('raaj:auth-tryLogin', function(event, login, digestedPassword) {
-                irajAuthenticationService.tryLogin(login, digestedPassword);
+                raajAuthenticationService.tryLogin(login, digestedPassword);
             });
         })
     ;
