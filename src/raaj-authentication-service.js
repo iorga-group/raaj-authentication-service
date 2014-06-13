@@ -18,7 +18,7 @@
     'use strict';
     // based on https://github.com/witoldsz/angular-http-auth/blob/master/src/http-auth-interceptor.js
 
-    angular.module('raaj-authentication-service', [])
+    angular.module('raajAuthenticationService', ['raajSecurityUtils'])
         .provider('raajAuthenticationService', function() {
             var getTimeApiUrl = 'api/security/getTime';
             this.setGetTimeApiUrl = function (getTimeApiUrlParam) {
@@ -28,6 +28,7 @@
             function AuthenticationService($injector, $rootScope) {
                 var queryBuffer = [],
                     $http,
+                    raajSecurityUtils,
                     authenticationService = this;
 
                 this.login = null;
@@ -71,7 +72,8 @@
                     // Adding the date header considering the time shifting
                     config.headers['X-RAAJ-Date'] = new Date(new Date().getTime() - authenticationService.timeShifting).toUTCString();
 
-                    securityUtils.addAuthorizationHeader(authenticationService.login, authenticationService.digestedPassword, {
+                    raajSecurityUtils = raajSecurityUtils || $injector.get('raajSecurityUtils'); // Lazy inject
+                    raajSecurityUtils.addAuthorizationHeader(authenticationService.login, authenticationService.digestedPassword, {
                         method: config.method,
                         body: config.transformRequest[0](config.data),
                         headers: config.headers,
