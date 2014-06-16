@@ -20,14 +20,19 @@
 
     angular.module('raajAuthenticationService', ['raajSecurityUtils'])
         .provider('raajAuthenticationService', function() {
-            var getTimeApiUrl = 'api/security/getTime';
+            var getTimeApiUrl = 'api/security/getTime',
+            	createBypassSecurityTokenApiUrl = 'api/security/createBypassSecurityToken';
             this.setGetTimeApiUrl = function (getTimeApiUrlParam) {
                 getTimeApiUrl = getTimeApiUrlParam;
             };
+            this.setCreateBypassSecurityTokenApiUrl = function (createBypassSecurityTokenApiUrlParam) {
+            	createBypassSecurityTokenApiUrl = createBypassSecurityTokenApiUrlParam;
+            }
 
             function AuthenticationService($injector, $rootScope) {
                 var queryBuffer = [],
                     $http,
+                    RaajAesUtil,
                     raajSecurityUtils,
                     authenticationService = this;
 
@@ -80,6 +85,23 @@
                         resource: config.url.substring(3, config.url.length)
                     });
                 };
+                this.createBypassSecurityToken = function(callbackFn) {
+                	RaajAesUtil = RaajAesUtil || $injector.get('RaajAesUtil'); // Lazy inject
+                	$http = $http || $injector.get('$http');	// Lazy inject
+                	
+            		$http.get(createBypassSecurityTokenApiUrl).success(function(data) {
+						var aesUtil = new RaajAesUtil(data.keySize, data.iterationCount);
+						var bypassSecurityToken = aesUtil.decrypt(data.salt, data.iv, authenticationService.digestedPassword, data.encryptedToken);
+						
+						callbackFn(bypassSecurityToken);
+            		});
+                };
+                this.addBypassSecurityTokenHeader = function (config, callbackFn) {
+                	authenticationService.createBypassSecurityToken(function(bypassSecurityToken) {
+                		config.headers['X-IRAJ-BypassSecurityToken'] = bypassSecurityToken;
+                		callbackFn();
+                	});
+                }
             };
 
             this.$get = function ($injector, $rootScope) {

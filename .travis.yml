@@ -3,4 +3,3 @@ node_js:
   - "0.10"
 install:
   - npm install
-  - node_modules/bower/bin/bower install
